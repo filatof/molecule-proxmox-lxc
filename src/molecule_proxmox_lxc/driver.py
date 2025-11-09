@@ -25,7 +25,7 @@ class ProxmoxLXC(Driver):
     def __init__(self, config=None):
         """Initialize Proxmox LXC driver."""
         super().__init__(config)
-        self._name = "proxmox-lxc"
+        self._name = "molecule-proxmox-lxc"
 
     @property
     def name(self):
@@ -101,6 +101,10 @@ class ProxmoxLXC(Driver):
         return next(
             item for item in instance_config_dict if item["instance"] == instance_name
         )
+
+    def get_instance_config(self):
+        """Public method to get instance configuration."""
+        return self._get_instance_config()
 
     def _get_instance_config_dict(self):
         """Get instance configuration dictionary."""
