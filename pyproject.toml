@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "molecule-proxmox-lxc"
+version = "0.0.1"
+description = "Molecule driver for Proxmox LXC containers"
+readme = "README.md"
+authors = [
+    {name = "Ivan Filatof", email = "filatof@gmail.com"}
+]
+maintainers = [
+    {name = "Ivan Filatof", email = "filatof@gmail.com"}
+]
+license = {text = "MIT"}
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Testing",
+    "Topic :: System :: Systems Administration",
+]
+keywords = ["molecule", "proxmox", "lxc", "ansible", "testing"]
+requires-python = ">=3.8"
+dependencies = [
+    "molecule>=6.0.0",
+    "ansible-core>=2.12",
+    "proxmoxer>=2.0.0",
+    "requests",
+]
+
+[project.urls]
+Homepage = "https://github.com/filatof/molecule-proxmox-lxc"
+Repository = "https://github.com/filatof/molecule-proxmox-lxc.git"
+"Bug Tracker" = "https://github.com/filatof/molecule-proxmox-lxc/issues"
+"Original Project" = "https://github.com/meffie/molecule-proxmox"
+
+[project.entry-points."molecule.driver"]
+"proxmox-lxc" = "molecule_proxmox_lxc.driver:ProxmoxLXC"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+molecule_proxmox_lxc = ["playbooks/*.yml", "playbooks/common/*.yml"]

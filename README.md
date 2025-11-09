@@ -24,14 +24,14 @@ The required Python packages are automatically installed when `molecule-proxmox-
 ## Installation
 
 ```bash
-pip install molecule-proxmox-lxc
+pip install molecule_proxmox_lxc
 ```
 
 Or install from source:
 
 ```bash
 git clone https://github.com/filatof/molecule-proxmox-lxc.git
-cd molecule-proxmox-lxc
+cd molecule_proxmox_lxc
 pip install .
 ```
 
@@ -50,7 +50,7 @@ LXC templates should have:
 
 ```yaml
 driver:
-  name: molecule-proxmox-lxc
+  name: molecule_proxmox_lxc
   options:
     api_host: pve01.example.com
     api_user: root@pam
@@ -71,7 +71,7 @@ platforms:
 
 ```yaml
 driver:
-  name: molecule-proxmox-lxc
+  name: molecule_proxmox_lxc
   options:
     api_host: pve01.example.com
     api_user: root@pam
@@ -93,7 +93,7 @@ platforms:
 
 ```yaml
 driver:
-  name: molecule-proxmox-lxc
+  name: molecule_proxmox_lxc
   options:
     proxmox_secrets: /path/to/proxmox_secrets.yml
     node: pve01
@@ -175,7 +175,7 @@ Reference in molecule.yml:
 
 ```yaml
 driver:
-  name: molecule-proxmox-lxc
+  name: molecule_proxmox_lxc
   options:
     proxmox_secrets: /path/to/proxmox_secrets.yml
     node: pve01
@@ -194,7 +194,7 @@ pass proxmox/pve01
 
 ```yaml
 driver:
-  name: molecule-proxmox-lxc
+  name: molecule_proxmox_lxc
   options:
     proxmox_secrets: /usr/local/bin/proxmox_secrets.sh
     node: pve01
@@ -233,7 +233,7 @@ Clone the repository:
 
 ```bash
 git clone https://github.com/filatof/molecule-proxmox-lxc.git
-cd molecule-proxmox-lxc
+cd molecule_proxmox_lxc
 ```
 
 Install in development mode:

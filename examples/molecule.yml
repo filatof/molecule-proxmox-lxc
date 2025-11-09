@@ -1,11 +1,11 @@
 ---
-# Example molecule.yml configuration for molecule-proxmox-lxc driver
+# Example molecule.yml configuration for molecule_proxmox_lxc driver
 
 dependency:
   name: galaxy
 
 driver:
-  name: molecule-proxmox-lxc
+  name: molecule_proxmox_lxc
   options:
     # Proxmox API connection
     proxmox_secrets: /path/to/proxmox_secrets.yml
