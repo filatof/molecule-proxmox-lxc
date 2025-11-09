@@ -24,7 +24,7 @@ class ProxmoxLXC(Driver):
 
     def __init__(self, config=None):
         """Initialize Proxmox LXC driver."""
-        super(ProxmoxLXC, self).__init__(config)
+        super().__init__(config)
         self._name = "proxmox-lxc"
 
     @property
@@ -114,7 +114,7 @@ class ProxmoxLXC(Driver):
     def sanity_checks(self):
         """Perform sanity checks."""
         # Note: Template validation moved to playbooks for better error handling
-        pass
+        pass  # pylint: disable=unnecessary-pass
 
     def template_dir(self):
         """Return template directory."""
