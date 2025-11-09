@@ -25,7 +25,7 @@ class ProxmoxLXC(Driver):
 
     def __init__(self, config=None):
         """Initialize Proxmox LXC driver."""
-        super(ProxmoxLXC, self).__init__(config)
+        super().__init__(config)
         self._name = "molecule-proxmox-lxc"
 
     @property
@@ -111,8 +111,8 @@ class ProxmoxLXC(Driver):
             try:
                 with open(self.instance_config, "r", encoding="utf-8") as f:
                     instance_config_dict = yaml.safe_load(f) or []
-            except Exception as e:
-                LOG.warning(f"Failed to load instance config: {e}")
+            except (OSError, yaml.YAMLError) as e:
+                LOG.warning("Failed to load instance config: %s", e)
                 instance_config_dict = []
 
         return instance_config_dict
