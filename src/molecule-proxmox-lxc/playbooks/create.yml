@@ -1,0 +1,111 @@
+---
+- name: Create
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+      options: "{{ molecule_yml.driver.options }}"
+  tasks:
+    - name: "Load proxmox connection secrets."
+      ansible.builtin.include_tasks: common/secrets.yml
+      when: options.proxmox_secrets is defined
+
+    - name: "Create molecule LXC instance(s)."
+      community.proxmox.proxmox:
+        state: present
+        api_host: "{{ api_host | d(options.api_host) | d(omit) }}"
+        api_port: "{{ api_port | d(options.api_port) | d(omit) }}"
+        api_user: "{{ api_user | d(options.api_user) | d(omit) }}"
+        api_password: "{{ api_password | d(options.api_password) | d(omit) }}"
+        api_token_id: "{{ api_token_id | d(options.api_token_id) | d(omit) }}"
+        api_token_secret: "{{ api_token_secret | d(options.api_token_secret) | d(omit) }}"
+        vmid: "{{ p.newid | d(omit) }}"
+        clone: "{{ p.template_vmid }}"
+        clone_type: full
+        hostname: "{{ p.name }}"
+        node: "{{ options.node }}"
+        timeout: "{{ options.timeout | d(omit) }}"
+        storage: "{{ p.storage | d(options.storage, true) | d('local', true) }}"
+      loop: "{{ molecule_yml.platforms }}"
+      loop_control:
+        loop_var: p
+        label: "{{ p.name }}"
+      register: proxmox_clone
+
+    - name: "Update molecule LXC instance(s) configuration."
+      community.proxmox.proxmox:
+        state: present
+        update: true
+        api_host: "{{ api_host | d(options.api_host) | d(omit) }}"
+        api_port: "{{ api_port | d(options.api_port) | d(omit) }}"
+        api_user: "{{ api_user | d(options.api_user) | d(omit) }}"
+        api_password: "{{ api_password | d(options.api_password) | d(omit) }}"
+        api_token_id: "{{ api_token_id | d(options.api_token_id) | d(omit) }}"
+        api_token_secret: "{{ api_token_secret | d(options.api_token_secret) | d(omit) }}"
+        vmid: "{{ rc.vmid }}"
+        hostname: "{{ rc.p.name }}"
+        node: "{{ options.node }}"
+        timeout: "{{ options.timeout | d(omit) }}"
+        netif:
+          net0: "name=eth0,ip={{ rc.p.ip_address }}/{{ rc.p.netmask | d('24') }},gw={{ rc.p.gateway | d('192.168.1.1') }},bridge={{ rc.p.bridge | d('vmbr0') }}"
+        nameserver: "{{ rc.p.nameservers | join(' ') if rc.p.nameservers is defined else omit }}"
+        searchdomain: "{{ rc.p.searchdomains | join(' ') if rc.p.searchdomains is defined else omit }}"
+        pubkey: "{{ lookup('file', options.ssh_identity_file ~ '.pub') if options.ssh_identity_file is defined else omit }}"
+        unprivileged: "{{ rc.p.unprivileged | d(true) }}"
+        features: "{{ rc.p.features | join(',') if rc.p.features is defined else omit }}"
+      loop: "{{ proxmox_clone.results }}"
+      loop_control:
+        loop_var: rc
+        label: "{{ rc.p.name }}"
+
+    - name: "Start molecule LXC instance(s)."
+      community.proxmox.proxmox:
+        state: started
+        api_host: "{{ api_host | d(options.api_host) | d(omit) }}"
+        api_port: "{{ api_port | d(options.api_port) | d(omit) }}"
+        api_user: "{{ api_user | d(options.api_user) | d(omit) }}"
+        api_password: "{{ api_password | d(options.api_password) | d(omit) }}"
+        api_token_id: "{{ api_token_id | d(options.api_token_id) | d(omit) }}"
+        api_token_secret: "{{ api_token_secret | d(options.api_token_secret) | d(omit) }}"
+        vmid: "{{ rc.vmid }}"
+        timeout: "{{ options.timeout | d(omit) }}"
+      loop: "{{ proxmox_clone.results }}"
+      loop_control:
+        loop_var: rc
+        label: "{{ rc.p.name }}"
+
+    - name: "Wait for LXC instances to become reachable."
+      ansible.builtin.wait_for:
+        host: "{{ rc.p.ip_address }}"
+        port: "{{ options.ssh_port | d(22) }}"
+        delay: 10
+        timeout: 300
+      loop: "{{ proxmox_clone.results }}"
+      loop_control:
+        loop_var: rc
+        label: "{{ rc.p.name }}"
+
+    - name: "Populate instance configs."
+      ansible.builtin.set_fact:
+        instance_config:
+          instance: "{{ rc.p.name }}"
+          address: "{{ rc.p.ip_address }}"
+          user: "{{ options.ssh_user | d('root') }}"
+          port: "{{ options.ssh_port | d(22) }}"
+          identity_file: "{{ options.ssh_identity_file }}"
+          vmid: "{{ rc.vmid }}"
+      loop: "{{ proxmox_clone.results }}"
+      loop_control:
+        loop_var: rc
+        label: "{{ rc.p.name }}"
+      register: instance_configs
+
+    - name: "Set instance_config fact."
+      ansible.builtin.set_fact:
+        instance_configs: "{{ instance_configs.results | map(attribute='ansible_facts.instance_config') | list }}"
+
+    - name: "Write instance configs."
+      ansible.builtin.copy:
+        content: "{{ instance_configs | to_nice_yaml }}"
+        dest: "{{ molecule_instance_config }}"
+        mode: '0644'
