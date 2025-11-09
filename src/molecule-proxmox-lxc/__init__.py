@@ -5,7 +5,7 @@ Adapted for LXC containers support.
 """
 
 __version__ = "0.0.1"
-__author__ = "Ivan Filatoff"
+__author__ = "Ivan Filatof"
 __credits__ = ["Michael Meffie"]
 
 from .driver import ProxmoxLXC
