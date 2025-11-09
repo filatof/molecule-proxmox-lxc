@@ -1,0 +1,28 @@
+driver:
+  name: molecule_proxmox_lxc
+  options:
+    proxmox_secrets: /path/to/proxmox_secrets.yml
+    node: pve01
+    ssh_user: ansible
+    ssh_identity_file: ~/.ssh/id_rsa
+    storage: local-lvm
+    timeout: 120
+
+platforms:
+  - name: container01
+    template_vmid: 5510
+    newid: 3015
+    ip_address: 192.168.1.40
+    netmask: 24
+    gateway: 192.168.1.1
+    bridge: vmbr0
+    nameservers:
+      - 192.168.1.1
+      - 8.8.8.8
+    searchdomains:
+      - local
+      - example.com
+    unprivileged: true
+    features:
+      - nesting=1
+      - keyctl=1
