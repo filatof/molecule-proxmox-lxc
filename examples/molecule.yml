@@ -1,0 +1,67 @@
+---
+# Example molecule.yml configuration for molecule-proxmox-lxc driver
+
+dependency:
+  name: galaxy
+
+driver:
+  name: molecule-proxmox-lxc
+  options:
+    # Proxmox API connection
+    proxmox_secrets: /path/to/proxmox_secrets.yml
+    # Or specify directly:
+    # api_host: pve01.example.com
+    # api_user: root@pam
+    # api_password: "your-password"
+    # api_token_id: "your-token-id"
+    # api_token_secret: "your-token-secret"
+
+    # Proxmox node
+    node: pve01
+
+    # SSH configuration
+    ssh_user: root
+    ssh_identity_file: ~/.ssh/id_rsa
+    ssh_port: 22
+
+    # Storage for containers
+    storage: local-lvm
+
+    # Timeout for operations (seconds)
+    timeout: 120
+
+platforms:
+  # Example 1: Basic configuration
+  - name: test01
+    template_vmid: 100
+    newid: 3001
+    ip_address: 192.168.1.100
+
+  # Example 2: Advanced configuration
+  - name: test02
+    template_vmid: 5510
+    newid: 3002
+    ip_address: 192.168.1.101
+    netmask: 24
+    gateway: 192.168.1.1
+    bridge: vmbr0
+    nameservers:
+      - 192.168.1.1
+      - 8.8.8.8
+    searchdomains:
+      - local
+      - example.com
+    unprivileged: true
+    features:
+      - nesting=1
+      - keyctl=1
+    storage: local-lvm
+
+provisioner:
+  name: ansible
+  playbooks:
+    converge: converge.yml
+    verify: verify.yml
+
+verifier:
+  name: ansible
