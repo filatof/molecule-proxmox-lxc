@@ -5,6 +5,7 @@ Adapted for LXC containers support.
 """
 
 import os
+import yaml
 from molecule import logger
 from molecule.api import Driver
 
@@ -24,7 +25,7 @@ class ProxmoxLXC(Driver):
 
     def __init__(self, config=None):
         """Initialize Proxmox LXC driver."""
-        super().__init__(config)
+        super(ProxmoxLXC, self).__init__(config)
         self._name = "molecule-proxmox-lxc"
 
     @property
@@ -102,17 +103,18 @@ class ProxmoxLXC(Driver):
             item for item in instance_config_dict if item["instance"] == instance_name
         )
 
-    def get_instance_config(self):
-        """Public method to get instance configuration."""
-        return self._get_instance_config()
-
     def _get_instance_config_dict(self):
         """Get instance configuration dictionary."""
-        instance_config_dict = {}
+        instance_config_dict = []
+
         if os.path.exists(self.instance_config):
-            instance_config_dict = self._config.driver.get_instance_config(
-                self.instance_config
-            )
+            try:
+                with open(self.instance_config, 'r', encoding='utf-8') as f:
+                    instance_config_dict = yaml.safe_load(f) or []
+            except Exception as e:
+                LOG.warning(f"Failed to load instance config: {e}")
+                instance_config_dict = []
+
         return instance_config_dict
 
     def sanity_checks(self):
