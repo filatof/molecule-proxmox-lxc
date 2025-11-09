@@ -109,7 +109,7 @@ class ProxmoxLXC(Driver):
 
         if os.path.exists(self.instance_config):
             try:
-                with open(self.instance_config, 'r', encoding='utf-8') as f:
+                with open(self.instance_config, "r", encoding="utf-8") as f:
                     instance_config_dict = yaml.safe_load(f) or []
             except Exception as e:
                 LOG.warning(f"Failed to load instance config: {e}")
