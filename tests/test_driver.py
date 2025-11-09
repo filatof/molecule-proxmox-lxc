@@ -10,7 +10,7 @@ class TestProxmoxLXC:
     def test_driver_name(self):
         """Test driver name property."""
         driver = ProxmoxLXC()
-        assert driver.name == "proxmox-lxc"
+        assert driver.name == "molecule-proxmox-lxc"
 
     def test_driver_name_setter(self):
         """Test driver name setter."""
